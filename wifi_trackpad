@@ -1,0 +1,99 @@
+1. Identificar los dispositivos afectados
+Primero, identifica el modelo exacto de tu placa Wi-Fi y trackpad. Usa los siguientes comandos:
+
+Para el Wi-Fi:
+
+bash
+Copy
+Edit
+lspci -nn | grep -i network
+o, si es un dispositivo USB:
+
+bash
+Copy
+Edit
+lsusb
+Para el trackpad:
+
+bash
+Copy
+Edit
+xinput list
+Esto te ayudará a saber qué controladores necesitas. Compártelos si necesitas más ayuda con ellos.
+
+2. Habilitar los repositorios de firmware no libre en Debian
+Edita tu archivo de fuentes APT para incluir los repositorios de firmware no libre:
+
+bash
+Copy
+Edit
+sudo nano /etc/apt/sources.list
+Asegúrate de que las siguientes líneas estén presentes:
+
+plaintext
+Copy
+Edit
+deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
+deb http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
+Luego actualiza la lista de paquetes:
+
+bash
+Copy
+Edit
+sudo apt update
+3. Instalar los paquetes de firmware
+Instala el metapaquete que incluye la mayoría de los firmwares:
+
+bash
+Copy
+Edit
+sudo apt install firmware-linux firmware-linux-nonfree firmware-iwlwifi firmware-realtek firmware-atheros firmware-misc-nonfree
+Esto debería cubrir la mayoría de los adaptadores Wi-Fi y trackpads. Si tu adaptador Wi-Fi necesita firmware específico (identificado con lspci o lsusb), instálalo.
+
+4. Configurar el trackpad
+Si el trackpad sigue sin funcionar, es posible que necesites instalar el paquete xserver-xorg-input-libinput, que maneja la mayoría de los dispositivos de entrada modernos:
+
+bash
+Copy
+Edit
+sudo apt install xserver-xorg-input-libinput
+Si el problema persiste, puedes intentar instalar xserver-xorg-input-synaptics:
+
+bash
+Copy
+Edit
+sudo apt install xserver-xorg-input-synaptics
+5. Reinicia el sistema
+Después de instalar los controladores, reinicia el sistema para cargar los módulos necesarios:
+
+bash
+Copy
+Edit
+sudo reboot
+6. Validar el estado
+Para verificar que el Wi-Fi está funcionando, usa el comando:
+
+bash
+Copy
+Edit
+nmcli device
+Para el trackpad, asegúrate de que aparece en xinput list. También puedes probar configurarlo con herramientas como gnome-tweaks o libinput.
+
+Si persisten los problemas
+Kernel más reciente: Debian utiliza un kernel más conservador que otras distribuciones. Si tu hardware es muy reciente, instala un kernel más nuevo desde los backports:
+
+bash
+Copy
+Edit
+sudo apt install -t bookworm-backports linux-image-amd64 linux-headers-amd64
+Comparar configuración con Linux Mint: Puedes usar lsmod en el LiveCD de Linux Mint para ver qué módulos están cargados y asegurarte de que Debian está cargando los mismos.
+
+Logs de diagnóstico:
+
+Revisa los logs de errores con:
+bash
+Copy
+Edit
+dmesg | grep -i firmware
+Si necesitas más ayuda con los comandos o logs, ¡compártelos y seguimos trabajando en ello! 😊
